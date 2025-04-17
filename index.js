@@ -35,7 +35,7 @@ app.get("/moves/:pokemon", async (req, res) => {
         // Ordena por nível e formata como "Move|Level|Move|Level|..."
         const sortedMoves = Object.entries(uniqueMoves)
             .sort((a, b) => a[1] - b[1])
-            .map(([name, level]) => `${capitalize(name)}|${level}`); // Com inicial maiúscula
+            .map(([name, level]) => `${formatMoveName(name)}|${level}`);
 
         const finalString = [sortedMoves.join("|")];
 
@@ -49,8 +49,12 @@ app.get("/moves/:pokemon", async (req, res) => {
     }
 });
 
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+// Função para transformar "heal-pulse" em "Heal-Pulse"
+function formatMoveName(name) {
+    return name
+        .split("-")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join("-");
 }
 
 app.listen(PORT, () => {
