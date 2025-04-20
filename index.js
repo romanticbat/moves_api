@@ -16,32 +16,23 @@ app.get("/moves/:pokemon", async (req, res) => {
         moves.forEach(move => {
             move.version_group_details.forEach(detail => {
                 if (detail.move_learn_method.name === "level-up") {
-                    levelUpMoves.push({
-                        name: move.move.name,
-                        level: detail.level_learned_at
-                    });
+                    levelUpMoves.push(move.move.name);
                 }
             });
         });
 
-        // Remove duplicatas mantendo o menor nível aprendido
-        const uniqueMoves = {};
-        levelUpMoves.forEach(move => {
-            if (!uniqueMoves[move.name] || move.level < uniqueMoves[move.name]) {
-                uniqueMoves[move.name] = move.level;
-            }
-        });
+        // Remove duplicatas
+        const uniqueMoves = [...new Set(levelUpMoves)];
 
-        // Ordena por nível e formata como "Move|Level|Move|Level|..."
-        const sortedMoves = Object.entries(uniqueMoves)
-            .sort((a, b) => a[1] - b[1])
-            .map(([name, level]) => `${formatMoveName(name)}|${level}`);
+        // Ordena por ordem alfabética (se preferir manter a ordem original, remova esta linha)
+        uniqueMoves.sort();
 
-        const finalString = [sortedMoves.join("|")];
+        // Formata os nomes dos movimentos e junta com "|"
+        const formattedMoves = uniqueMoves.map(formatMoveName).join(";");
 
         res.json({
             pokemon: pokemonName,
-            levelUpMoves: finalString
+            levelUpMoves: [formattedMoves]
         });
 
     } catch (error) {
